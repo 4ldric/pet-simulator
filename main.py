@@ -45,9 +45,6 @@ class Pet(ABC):
         pass
 
 
-
-    
-
 #  Raças
 class cachorro(Pet):
     def dormir(self):
@@ -64,7 +61,7 @@ class cachorro(Pet):
         }
         return lista_brincadeiras
 
-    def brincar(self):
+    def brincar(self,brincadeira):
         return f"{self.get_nome()} esta brincando!"
     
     def comer(self):
@@ -82,12 +79,21 @@ class gato(Pet):
 
 
 class Jogo:
-    dog = cachorro("spike", 1, "cachorro")
     """Classe orquestradora das logicas do game"""
-    def brincadeira(self):
-        for indice, brincadeira in enumerate(self.get_brincadeiras_disponiveis()):
-            print(indice, brincadeira)
-            
-jogo = Jogo
+    def __init__(self):
+        self.dog = cachorro("spike", 1, "cachorro")
+        self.listas_brincadeiras = self.dog.get_brincadeiras_disponiveis()
 
-jogo()
+    def brincadeira(self):
+        print(" === Brincadeiras ===")
+        for indice, brincadeira in enumerate(self.listas_brincadeiras, start=1):
+            print( f"""» [{indice}]. {brincadeira}""" )
+        escolha = int(input("\nEscolha a brincadeira: "))
+        indice_ajustado = escolha - 1
+        brincadeiras = list(self.listas_brincadeiras.items())
+        
+
+
+jogo = Jogo()
+
+jogo.brincadeira()
