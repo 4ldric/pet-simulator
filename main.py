@@ -125,7 +125,7 @@ class Jogo:
         comida = comidas[indice_ajustado]
         resultado = self.meu_pet.comer(comida)
         if not resultado:
-            print(f"{self.get_nome()} esta de buxo cheio!")
+            print(f"{self.meu_pet.get_nome()} esta de buxo cheio!")
         else:
             print(resultado)
 
@@ -135,3 +135,4 @@ jogo = Jogo()
 
 
 jogo.alimentar()
+jogo.brincadeira()
