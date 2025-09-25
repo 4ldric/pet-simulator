@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 from random import randint
-from re import I
+from time import sleep
 
 class Pet(ABC):
     """classe orquestradora da parte animal do jogo"""
-    def __init__(self, nome, raca, idade= 1, fome=100, felicidade= 10, energia= 70):
+    def __init__(self, nome, raca, idade= 1, fome=75, felicidade= 10, energia= 50):
         self.__nome = nome
         self.__raca = raca
         self.__idade = idade
@@ -31,7 +31,7 @@ class Pet(ABC):
     def dormir(self):
         self.__fome += self.get_energia() // 2
         self.__energia = 100
-        return f"{self.get_nome()} recuperou sua energia e aumentou sua fome para {self.get_fome()}"
+        return f"{self.get_nome()} se deitou para dormir, recuperou sua energia e aumentou sua fome para {self.get_fome()}"
 
     @abstractmethod
     def get_brincadeiras_disponiveis(self):
@@ -58,10 +58,10 @@ class Pet(ABC):
 #  Raças
 class cachorro(Pet):
     def dormir(self):
-        if not self.get_energia() >= 65:
-            print(f"{self.get_nome()} não esta com sono!")
+        if not  self.get_energia() > 65:
+            return f"{self.get_nome()} não esta com sono!"
         else:
-            return f"{self.get_nome()} se deitou para dormir..\nSeu pet {super().dormir()}"
+            return f"{super().dormir()}"
     
     def get_brincadeiras_disponiveis(self):
         lista_brincadeiras = {"Jogar-graveto": 10, "Corrida": 20, "Cabo-guerra": 30 }
@@ -71,24 +71,24 @@ class cachorro(Pet):
         if not self.get_energia() > self.get_brincadeiras_disponiveis()[brincadeira]:
             return False
         else:
-            return (f"{self.get_nome()}, {super().brincar(brincadeira)}")
+            return f"{super().brincar(brincadeira)}"
     
     def get_comidas_disponiveis(self):
         lista_comidas = {"petisco": 10, "carne": 20, "ração": 30}
         return lista_comidas
 
     def comer(self, comida):
-        if not self.get_fome() < 100:
+        if not self.get_fome() > 45:
             return False
         else:
-            return f"{self.get_nome()} {super().comer(comida)}"
+            return f"{super().comer(comida)}"
 
 class gato(Pet):
     def dormir(self):
-        if not self.get_energia() >= 65:
+        if not self.get_energia() > 65:
             return f"{self.get_nome()} não esta com sono!"
         else:
-            return f"{self.get_nome()} {super().dormir()}"
+            return f"{super().dormir()}"
 
     def get_brincadeiras_disponiveis(self):
         lista_brincadeiras = {"arranhador": 10, "perseguir-laser": 20, "caçar-rato": 30}
@@ -105,22 +105,32 @@ class gato(Pet):
         return lista_comidas
 
     def comer(self, comida):
-        if not self.get_fome() < 100:
+        if not self.get_fome() > 45:
             return False
         else:
             return super().comer(comida)
 
 
 class Jogo:
-    """Classe orquestradora das logicas do game"""        
+    """Classe orquestradora das logicas do game"""    
+
+    def exibir_detalhes(self):
+        energia = self.meu_pet.get_energia()
+        fome = self.meu_pet.get_fome()
+        felicidade = self.meu_pet.get_felicidade()
+        idade = self.meu_pet.get_idade()
+        raca = self.meu_pet.get_raca()
+        print("'\nimagem de exemplo do pet'")
+        print(f"\nEnergia: {energia}\nFome: {fome}\nFelicidade: {felicidade}\nIdade: {idade}\nRaça: {raca}")
+
     def brincadeira(self):
-        print(" === Brincadeiras ===")
+        print(" === Brincadeiras ===\n")
         brincadeiras = []
         for indice, brincadeira_disponivel in enumerate(self.meu_pet.get_brincadeiras_disponiveis(), start=1):
             brincadeiras.append(brincadeira_disponivel)
             print( f"""» [{indice}]. {brincadeira_disponivel}""" )
-        escolha = int(input("\nEscolha a brincadeira: "))
-        indice_ajustado = escolha - 1
+        escolha = input("\nEscolha a brincadeira: ")
+        indice_ajustado = int(escolha) - 1
         brincadeira = brincadeiras[indice_ajustado]
         resultado = self.meu_pet.brincar(brincadeira)
         if not resultado:
@@ -130,12 +140,12 @@ class Jogo:
 
     def alimentar(self):
         comidas = []
-        print("=== comidas ===")
+        print("=== comidas ===\n")
         for indice, comida_disponivel in enumerate(self.meu_pet.get_comidas_disponiveis(), start = 1):
             comidas.append(comida_disponivel)
             print(f"""» [{indice}]. {comida_disponivel}""")
         escolha = int(input("\nEscolha a comida para seu pet: "))
-        indice_ajustado = escolha - 1
+        indice_ajustado = int(escolha) - 1
         comida = comidas[indice_ajustado]
         resultado = self.meu_pet.comer(comida)
         if not resultado:
@@ -143,25 +153,26 @@ class Jogo:
         else:
             print(resultado)
 
-    def dormir(self):
-        self.meu_pet.dormir()
+    def descansar(self):
+        return self.meu_pet.dormir()
+        
 
     def criar_pet(self):
         racas_disponiveis = {"Cachorro": cachorro, "Gato": gato}
         lista_racas = []
-        print("=== Raças Disponiveis ===")
+        print("\n=== Raças Disponiveis ===\n")
         for indice, raca in enumerate(racas_disponiveis, start = 1):
             lista_racas.append(raca)
             print( f"» [{indice}]. {raca}")
-        escolha = input("Escolha a raça do seu pet ou digite [0] para cancelar: ")
+        escolha = input("\nEscolha a raça do seu pet ou digite [0] para cancelar: ")
         if escolha != "0":
             indice_ajustado = int(escolha) - 1
             nome = input("Digite o nome do seu pet: ")
             raca =  lista_racas[indice_ajustado]
-            return self.meu_pet = racas_disponiveis[raca](nome,raca)
+            self.meu_pet = racas_disponiveis[raca](nome,raca)
         else:
             print("saindo...")
-            
+
     def menu_inicial(self):
         print("\n=== Menu Inicial ===")
         print(
@@ -174,16 +185,47 @@ class Jogo:
             self.criar_pet()
         else:
             print("Saindo...")
-            
+            return False
+
+    def menu_principal(self):
+        print('\n=== Menu do Pet ===')
+        print(
+                """
+» [1]. Ver atributos do pet
+» [2]. Brincar com o pet
+» [3]. Alimentar o pet
+» [4]. Levar o pet para cama
+» [5]. Sair """
+                )
+        escolha = input("\nEscolha uma opção: ")
+        if escolha == "1":
+            self.exibir_detalhes()
+            input("Pressione enter para retornar ao menu...")
+        elif escolha == "2":
+            self.brincadeira()
+            sleep(1.1)
+        elif escolha == "3":
+            self.alimentar()
+            sleep(1.1)
+        elif escolha == "4":
+            print(self.descansar())
+            sleep(1.1)
+        elif escolha == "5":
+            return False
+                
 
     def iniciar_jogo(self):
         self.meu_pet = None
         jogar = True
         while jogar:
             if self.meu_pet is None:
-                self.menu_inicial()
+                if not self.menu_inicial():
+                    jogar = False
             else:
-                self.menu_principal()
+                resultado_menu = self.menu_principal()
+                if not resultado_menu:
+                    jogar = False
+            
 jogo = Jogo()
 
 
